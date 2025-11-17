@@ -1,0 +1,146 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: farmatodo-postgres
+    environment:
+      POSTGRES_DB: farmatodo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: farmatodo
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SERVER_PORT: 8081
+      API_KEY: test-api-key-12345
+      TOKEN_REJECTION_PROBABILITY: 0.1
+      JASYPT_ENCRYPTOR_PASSWORD: mySecretKey123
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  customer-service:
+    build: ./customer-service
+    container_name: customer-service
+    ports:
+      - "8082:8082"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: farmatodo
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SERVER_PORT: 8082
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - "8083:8083"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: farmatodo
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SERVER_PORT: 8083
+      MIN_STOCK_THRESHOLD: 0
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  cart-service:
+    build: ./cart-service
+    container_name: cart-service
+    ports:
+      - "8084:8084"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: farmatodo
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SERVER_PORT: 8084
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "8085:8085"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: farmatodo
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SERVER_PORT: 8085
+      PUBSUB_ENABLED: false
+      GCP_PROJECT_ID: local
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  payment-worker:
+    build: ./payment-worker
+    container_name: payment-worker
+    ports:
+      - "8086:8086"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: farmatodo
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SERVER_PORT: 8086
+      PAYMENT_REJECTION_PROBABILITY: 0.2
+      MAX_PAYMENT_ATTEMPTS: 3
+      ORDER_SERVICE_URL: http://order-service:8085
+      PUBSUB_ENABLED: false
+      GCP_PROJECT_ID: local
+    depends_on:
+      - postgres
+      - order-service
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "8087:8087"
+    environment:
+      SERVER_PORT: 8087
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: 587
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      PUBSUB_ENABLED: false
+      GCP_PROJECT_ID: local
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+
