@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: notification-service
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  cloud:
+    gcp:
+      pubsub:
+        enabled: ${PUBSUB_ENABLED:false}
+        project-id: ${GCP_PROJECT_ID:prueba-farmatodo-478406}
+
+server:
+  port: ${PORT:8080}   # Cloud Run necesita PORT dinámico
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.farmatodo: DEBUG
