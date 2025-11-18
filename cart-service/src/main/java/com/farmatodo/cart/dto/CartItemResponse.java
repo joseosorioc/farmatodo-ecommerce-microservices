@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * DTO para respuesta de item del carrito.
+ * Contiene la información completa del item en el carrito.
+ */
 @Data
 @Builder
 @NoArgsConstructor

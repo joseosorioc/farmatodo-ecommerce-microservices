@@ -11,6 +11,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Entidad que representa un pedido del sistema.
+ * Almacena información del pedido, estado y datos de pago.
+ */
 @Entity
 @Table(name = "orders")
 @Data

@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio para gestión de clientes.
+ * Maneja operaciones CRUD y validaciones de unicidad.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -21,6 +25,12 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
+    /**
+     * Crea un nuevo cliente en el sistema.
+     * Valida que email y teléfono sean únicos.
+     * @param request Datos del cliente a crear
+     * @return Cliente creado
+     */
     @Transactional
     public CustomerResponse createCustomer(CustomerRequest request) {
         log.info("Creando cliente con email: {}", request.getEmail());
@@ -53,18 +63,34 @@ public class CustomerService {
         return mapToResponse(customer);
     }
 
+    /**
+     * Obtiene un cliente por su ID.
+     * @param id ID del cliente
+     * @return Cliente encontrado
+     */
     public CustomerResponse getCustomerById(UUID id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + id));
         return mapToResponse(customer);
     }
 
+    /**
+     * Obtiene todos los clientes registrados.
+     * @return Lista de clientes
+     */
     public List<CustomerResponse> getAllCustomers() {
         return customerRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Actualiza la información de un cliente existente.
+     * Valida que email y teléfono sean únicos si cambian.
+     * @param id ID del cliente a actualizar
+     * @param request Nuevos datos del cliente
+     * @return Cliente actualizado
+     */
     @Transactional
     public CustomerResponse updateCustomer(UUID id, CustomerRequest request) {
         Customer customer = customerRepository.findById(id)
@@ -96,6 +122,11 @@ public class CustomerService {
         return mapToResponse(customer);
     }
 
+    /**
+     * Convierte una entidad Customer a CustomerResponse.
+     * @param customer Entidad del cliente
+     * @return DTO de respuesta
+     */
     private CustomerResponse mapToResponse(Customer customer) {
         return CustomerResponse.builder()
                 .id(customer.getId())

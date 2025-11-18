@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Controlador REST para gestión de productos y búsqueda.
+ * Proporciona endpoints para buscar y consultar productos.
+ */
 @RestController
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
@@ -24,6 +28,10 @@ public class ProductController {
 
     private final ProductService productService;
 
+    /**
+     * Verifica el estado del servicio de productos.
+     * @return Respuesta con mensaje de estado
+     */
     @Operation(summary = "Health check", description = "Verifica el estado del servicio")
     @ApiResponse(responseCode = "200", description = "Servicio activo")
     @GetMapping("/ping")
@@ -31,6 +39,13 @@ public class ProductController {
         return ResponseEntity.ok(java.util.Map.of("message", "pong"));
     }
 
+    /**
+     * Busca productos por nombre, descripción o categoría.
+     * Guarda la búsqueda de forma asíncrona para análisis.
+     * @param query Término de búsqueda
+     * @param customerId ID del cliente (opcional)
+     * @return Lista de productos encontrados
+     */
     @Operation(summary = "Buscar productos", description = "Busca productos por nombre, descripción o categoría")
     @ApiResponse(responseCode = "200", description = "Lista de productos encontrados")
     @GetMapping("/search")
@@ -41,6 +56,10 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    /**
+     * Obtiene todos los productos disponibles con stock.
+     * @return Lista de productos disponibles
+     */
     @Operation(summary = "Obtener todos los productos", description = "Retorna la lista de todos los productos disponibles")
     @ApiResponse(responseCode = "200", description = "Lista de productos")
     @GetMapping
@@ -49,6 +68,12 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    /**
+     * Obtiene la información de un producto por su ID.
+     * Valida que el producto tenga stock disponible.
+     * @param id ID del producto
+     * @return Información del producto
+     */
     @Operation(summary = "Obtener producto por ID", description = "Retorna la información de un producto específico")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Producto encontrado"),

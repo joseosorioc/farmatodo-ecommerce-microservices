@@ -18,6 +18,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+/**
+ * Servicio para procesamiento de pagos.
+ * Maneja tokenización de tarjetas y procesamiento de pagos con reintentos.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -46,6 +50,14 @@ public class PaymentService {
     @Value("${API_KEY:test-api-key-12345}")
     private String apiKey;
 
+    /**
+     * Procesa un pago: tokeniza la tarjeta y procesa el pago.
+     * Maneja reintentos y actualiza el estado del pedido.
+     * @param orderId ID del pedido
+     * @param customerId ID del cliente
+     * @param amount Monto del pago
+     * @param cardData Datos de la tarjeta
+     */
     public void processPayment(UUID orderId, UUID customerId, Double amount, CardData cardData) {
         log.info("Procesando pago para orden: {}, monto: {}", orderId, amount);
 

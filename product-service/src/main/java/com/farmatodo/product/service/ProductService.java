@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio para gestión de productos y búsqueda.
+ * Maneja búsqueda de productos y registro de búsquedas.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,6 +32,13 @@ public class ProductService {
     @Value("${app.min-stock-threshold:0}")
     private Integer minStockThreshold;
 
+    /**
+     * Busca productos por término de búsqueda.
+     * Guarda la búsqueda de forma asíncrona.
+     * @param query Término de búsqueda
+     * @param customerId ID del cliente (opcional)
+     * @return Lista de productos encontrados
+     */
     public List<ProductResponse> searchProducts(String query, UUID customerId) {
         log.info("Buscando productos con query: {}", query);
 
@@ -42,6 +53,10 @@ public class ProductService {
         return response;
     }
 
+    /**
+     * Obtiene todos los productos con stock disponible.
+     * @return Lista de productos disponibles
+     */
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream()
                 .filter(p -> p.getStock() > minStockThreshold)
@@ -49,6 +64,12 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Obtiene un producto por su ID.
+     * Valida que tenga stock disponible.
+     * @param id ID del producto
+     * @return Producto encontrado
+     */
     public ProductResponse getProductById(UUID id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
@@ -60,6 +81,12 @@ public class ProductService {
         return mapToResponse(product);
     }
 
+    /**
+     * Guarda una búsqueda de forma asíncrona para análisis.
+     * @param query Término de búsqueda
+     * @param customerId ID del cliente (opcional)
+     * @param resultsCount Cantidad de resultados encontrados
+     */
     @Async
     @Transactional
     public void saveSearchAsync(String query, UUID customerId, Integer resultsCount) {
@@ -77,6 +104,11 @@ public class ProductService {
         }
     }
 
+    /**
+     * Convierte una entidad Product a ProductResponse.
+     * @param product Entidad del producto
+     * @return DTO de respuesta
+     */
     private ProductResponse mapToResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())

@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Controlador REST para gestión de clientes.
+ * Proporciona endpoints para crear, consultar y actualizar clientes.
+ */
 @RestController
 @RequestMapping("/api/v1/customers")
 @RequiredArgsConstructor
@@ -27,6 +31,10 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    /**
+     * Verifica el estado del servicio de clientes.
+     * @return Respuesta con mensaje de estado
+     */
     @Operation(summary = "Health check", description = "Verifica el estado del servicio")
     @ApiResponse(responseCode = "200", description = "Servicio activo")
     @GetMapping("/ping")
@@ -34,6 +42,12 @@ public class CustomerController {
         return ResponseEntity.ok(java.util.Map.of("message", "pong"));
     }
 
+    /**
+     * Crea un nuevo cliente en el sistema.
+     * Valida que el email y teléfono sean únicos.
+     * @param request Datos del cliente a crear
+     * @return Cliente creado
+     */
     @Operation(summary = "Crear cliente", description = "Crea un nuevo cliente en el sistema")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Cliente creado exitosamente"),
@@ -45,6 +59,11 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * Obtiene la información de un cliente por su ID.
+     * @param id ID del cliente
+     * @return Información del cliente
+     */
     @Operation(summary = "Obtener cliente por ID", description = "Retorna la información de un cliente específico")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cliente encontrado"),
@@ -57,6 +76,10 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Obtiene la lista de todos los clientes registrados.
+     * @return Lista de clientes
+     */
     @Operation(summary = "Obtener todos los clientes", description = "Retorna la lista de todos los clientes")
     @ApiResponse(responseCode = "200", description = "Lista de clientes")
     @GetMapping
@@ -65,6 +88,13 @@ public class CustomerController {
         return ResponseEntity.ok(customers);
     }
 
+    /**
+     * Actualiza la información de un cliente existente.
+     * Valida que email y teléfono sean únicos si cambian.
+     * @param id ID del cliente a actualizar
+     * @param request Nuevos datos del cliente
+     * @return Cliente actualizado
+     */
     @Operation(summary = "Actualizar cliente", description = "Actualiza la información de un cliente existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cliente actualizado exitosamente"),

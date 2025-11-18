@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * DTO para respuesta de información de cliente.
+ * Contiene todos los datos del cliente incluyendo timestamps.
+ */
 @Data
 @Builder
 @NoArgsConstructor

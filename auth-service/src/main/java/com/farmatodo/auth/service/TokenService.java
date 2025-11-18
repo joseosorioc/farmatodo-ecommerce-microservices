@@ -17,6 +17,10 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
+/**
+ * Servicio para la creación y gestión de tokens de tarjetas de crédito.
+ * Maneja la tokenización, enmascaramiento y registro de transacciones.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,6 +32,12 @@ public class TokenService {
     @Value("${app.token-rejection-probability:0.1}")
     private double rejectionProbability;
 
+    /**
+     * Crea un token único para una tarjeta de crédito.
+     * Enmascara el número de tarjeta y registra la transacción.
+     * @param request Datos de la tarjeta a tokenizar
+     * @return Respuesta con el token generado
+     */
     @Transactional
     public TokenResponse createToken(CreditCardRequest request) {
         UUID transactionId = UUID.randomUUID();
@@ -88,10 +98,19 @@ public class TokenService {
         }
     }
 
+    /**
+     * Busca un token por su valor.
+     * @param token Valor del token a buscar
+     * @return Token encontrado o vacío
+     */
     public Optional<CreditCardToken> getTokenByTokenValue(String token) {
         return tokenRepository.findByToken(token);
     }
 
+    /**
+     * Genera un token único que no existe en la base de datos.
+     * @return Token único generado
+     */
     private String generateUniqueToken() {
         String token;
         do {
@@ -100,11 +119,24 @@ public class TokenService {
         return token;
     }
 
+    /**
+     * Determina si una tokenización debe ser rechazada según probabilidad configurada.
+     * @return true si debe rechazarse, false en caso contrario
+     */
     private boolean shouldReject() {
         Random random = new Random();
         return random.nextDouble() < rejectionProbability;
     }
 
+    /**
+     * Guarda un registro de transacción en la base de datos.
+     * @param transactionId ID único de la transacción
+     * @param operation Tipo de operación realizada
+     * @param request Datos de la petición
+     * @param response Datos de la respuesta
+     * @param status Estado de la transacción
+     * @param errorMessage Mensaje de error si existe
+     */
     private void saveTransactionLog(UUID transactionId, String operation, Object request, 
                                    Object response, String status, String errorMessage) {
         try {

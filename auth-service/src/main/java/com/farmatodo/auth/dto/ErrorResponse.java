@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * DTO para respuestas de error del servicio.
+ * Contiene información detallada sobre errores ocurridos.
+ */
 @Data
 @Builder
 @NoArgsConstructor

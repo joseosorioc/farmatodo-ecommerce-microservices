@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * DTO para respuesta de tokenización exitosa.
+ * Contiene el token generado y su información de expiración.
+ */
 @Data
 @Builder
 @NoArgsConstructor

@@ -10,6 +10,10 @@ import org.hibernate.annotations.GenericGenerator;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * Entidad que representa un producto del catálogo.
+ * Almacena información del producto incluyendo precio y stock.
+ */
 @Entity
 @Table(name = "products")
 @Data

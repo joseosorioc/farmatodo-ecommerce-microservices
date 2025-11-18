@@ -10,6 +10,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Configuración de seguridad para el servicio de autenticación.
+ * Define las reglas de autorización y filtros de seguridad.
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -17,6 +21,12 @@ public class SecurityConfig {
 
     private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
 
+    /**
+     * Configura la cadena de filtros de seguridad.
+     * Permite acceso público a /ping y Swagger, requiere autenticación para el resto.
+     * @param http Configuración de seguridad HTTP
+     * @return Cadena de filtros configurada
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

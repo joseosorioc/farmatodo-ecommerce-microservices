@@ -6,6 +6,10 @@ import lombok.Data;
 
 import java.util.UUID;
 
+/**
+ * DTO para solicitud de agregar item al carrito.
+ * Contiene el ID del producto y la cantidad.
+ */
 @Data
 public class CartItemRequest {
     @NotNull(message = "El ID del producto es requerido")
