@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: product-service
+
+  datasource:
+    url: jdbc:postgresql:///farmatodo?cloudSqlInstance=prueba-farmatodo-478406:us-central1:farmatodo-postgres&socketFactory=com.google.cloud.sql.postgres.SocketFactory
+    username: postgres
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 1
+      connection-timeout: 30000
+      initialization-fail-timeout: -1
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  cloud:
+    gcp:
+      sql:
+        enabled: false
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.farmatodo: DEBUG
+    org.springframework: INFO
+    com.zaxxer.hikari: DEBUG
