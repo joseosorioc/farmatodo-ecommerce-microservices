@@ -10,6 +10,10 @@ import org.hibernate.annotations.GenericGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Entidad que representa un item en el carrito de compras.
+ * Almacena la relación entre cliente, producto y cantidad.
+ */
 @Entity
 @Table(name = "carts")
 @Data

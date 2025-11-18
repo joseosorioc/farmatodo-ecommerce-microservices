@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * DTO para respuesta de item de pedido.
+ * Contiene información completa del item incluyendo precios.
+ */
 @Data
 @Builder
 @NoArgsConstructor

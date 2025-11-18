@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio para gestión de pedidos.
+ * Maneja creación, consulta y actualización de pedidos y publicación de eventos.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -33,6 +37,12 @@ public class OrderService {
     @Value("${spring.cloud.gcp.pubsub.project-id:local}")
     private String projectId;
 
+    /**
+     * Crea un nuevo pedido y publica evento de pago.
+     * Calcula el total y crea los items del pedido.
+     * @param request Datos del pedido a crear
+     * @return Pedido creado
+     */
     @Transactional
     public OrderResponse createOrder(OrderRequest request) {
         UUID transactionId = UUID.randomUUID();
@@ -77,6 +87,11 @@ public class OrderService {
         return mapToResponse(order, orderItems);
     }
 
+    /**
+     * Obtiene un pedido por su ID.
+     * @param id ID del pedido
+     * @return Pedido encontrado con sus items
+     */
     public OrderResponse getOrderById(UUID id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + id));
@@ -84,6 +99,11 @@ public class OrderService {
         return mapToResponse(order, items);
     }
 
+    /**
+     * Obtiene todos los pedidos de un cliente.
+     * @param customerId ID del cliente
+     * @return Lista de pedidos del cliente
+     */
     public List<OrderResponse> getOrdersByCustomer(UUID customerId) {
         return orderRepository.findByCustomerId(customerId).stream()
                 .map(order -> {
@@ -93,6 +113,11 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Actualiza el estado de un pedido.
+     * @param orderId ID del pedido
+     * @param status Nuevo estado del pedido
+     */
     @Transactional
     public void updateOrderStatus(UUID orderId, Order.OrderStatus status) {
         Order order = orderRepository.findById(orderId)
@@ -102,6 +127,12 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    /**
+     * Actualiza el estado y token de tarjeta de un pedido.
+     * @param orderId ID del pedido
+     * @param status Nuevo estado del pedido
+     * @param cardToken Token de tarjeta tokenizada
+     */
     @Transactional
     public void updateOrderStatusAndToken(UUID orderId, Order.OrderStatus status, String cardToken) {
         Order order = orderRepository.findById(orderId)
@@ -112,6 +143,11 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    /**
+     * Publica evento de pago en Pub/Sub para procesamiento.
+     * @param order Pedido creado
+     * @param cardData Datos de la tarjeta a tokenizar
+     */
     private void publishPaymentEvent(Order order, OrderRequest.CreditCardData cardData) {
         try {
             // Verificar si hay emulador configurado o si es GCP real
@@ -150,6 +186,12 @@ public class OrderService {
         }
     }
 
+    /**
+     * Convierte una entidad Order y sus items a OrderResponse.
+     * @param order Entidad del pedido
+     * @param items Items del pedido
+     * @return DTO de respuesta
+     */
     private OrderResponse mapToResponse(Order order, List<OrderItem> items) {
         return OrderResponse.builder()
                 .id(order.getId())
@@ -166,6 +208,11 @@ public class OrderService {
                 .build();
     }
 
+    /**
+     * Convierte una entidad OrderItem a OrderItemResponse.
+     * @param item Entidad del item
+     * @return DTO de respuesta
+     */
     private com.farmatodo.order.dto.OrderItemResponse mapItemToResponse(OrderItem item) {
         return com.farmatodo.order.dto.OrderItemResponse.builder()
                 .id(item.getId())

@@ -10,6 +10,10 @@ import org.hibernate.annotations.GenericGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Entidad que representa un cliente del sistema.
+ * Almacena información personal y de contacto del cliente.
+ */
 @Entity
 @Table(name = "customers", uniqueConstraints = {
     @UniqueConstraint(columnNames = "email"),

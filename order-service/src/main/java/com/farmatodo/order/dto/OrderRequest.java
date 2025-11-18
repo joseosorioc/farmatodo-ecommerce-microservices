@@ -8,6 +8,10 @@ import lombok.Data;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * DTO para solicitud de creación de pedido.
+ * Contiene datos del cliente, tarjeta, dirección e items.
+ */
 @Data
 public class OrderRequest {
     @NotNull(message = "El ID del cliente es requerido")

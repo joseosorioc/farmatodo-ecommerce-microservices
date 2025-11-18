@@ -16,6 +16,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
+/**
+ * Filtro de autenticación basado en API Key.
+ * Valida el header X-API-Key en las peticiones HTTP.
+ */
 @Component
 @RequiredArgsConstructor
 public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
@@ -23,6 +27,13 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     @Value("${app.api-key}")
     private String validApiKey;
 
+    /**
+     * Valida la API Key en el header de la petición.
+     * Permite /ping sin autenticación.
+     * @param request Petición HTTP
+     * @param response Respuesta HTTP
+     * @param filterChain Cadena de filtros
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 
                                    FilterChain filterChain) throws ServletException, IOException {

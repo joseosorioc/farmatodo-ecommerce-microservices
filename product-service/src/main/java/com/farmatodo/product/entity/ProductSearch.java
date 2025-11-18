@@ -10,6 +10,10 @@ import org.hibernate.annotations.GenericGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Entidad que registra las búsquedas de productos.
+ * Almacena información para análisis de búsquedas.
+ */
 @Entity
 @Table(name = "product_searches")
 @Data

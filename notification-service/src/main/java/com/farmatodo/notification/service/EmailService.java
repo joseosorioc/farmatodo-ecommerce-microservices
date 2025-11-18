@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+/**
+ * Servicio para envío de correos electrónicos.
+ * Maneja el envío de notificaciones de pago por email.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -15,6 +19,12 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
+    /**
+     * Envía email de confirmación de pago exitoso.
+     * @param customerEmail Email del cliente
+     * @param orderId ID del pedido
+     * @param amount Monto del pago
+     */
     public void sendPaymentSuccessEmail(String customerEmail, UUID orderId, Double amount) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -38,6 +48,11 @@ public class EmailService {
         }
     }
 
+    /**
+     * Envía email de notificación de pago fallido.
+     * @param customerEmail Email del cliente
+     * @param orderId ID del pedido
+     */
     public void sendPaymentFailureEmail(String customerEmail, UUID orderId) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();

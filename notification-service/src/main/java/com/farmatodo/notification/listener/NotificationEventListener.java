@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+/**
+ * Listener de eventos de Pub/Sub para notificaciones.
+ * Escucha eventos de pago y envía emails correspondientes.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -17,6 +21,12 @@ public class NotificationEventListener implements MessageReceiver {
 
     private final EmailService emailService;
 
+    /**
+     * Procesa mensajes recibidos de Pub/Sub.
+     * Extrae información del evento y envía el email correspondiente.
+     * @param message Mensaje recibido de Pub/Sub
+     * @param consumer Consumidor para confirmar o rechazar el mensaje
+     */
     @Override
     public void receiveMessage(PubsubMessage message, AckReplyConsumer consumer) {
         try {

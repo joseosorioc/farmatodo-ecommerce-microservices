@@ -10,6 +10,10 @@ import org.hibernate.annotations.GenericGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Entidad que registra las transacciones del servicio.
+ * Almacena información de operaciones para auditoría y trazabilidad.
+ */
 @Entity
 @Table(name = "transaction_logs")
 @Data

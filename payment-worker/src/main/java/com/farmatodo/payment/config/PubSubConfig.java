@@ -12,6 +12,10 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+/**
+ * Configuración de Pub/Sub para suscripción a eventos.
+ * Inicia el subscriber para escuchar eventos de pedidos.
+ */
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +28,10 @@ public class PubSubConfig {
 
     private Subscriber subscriber;
 
+    /**
+     * Inicializa el subscriber de Pub/Sub al arrancar la aplicación.
+     * Configura la suscripción al topic de pedidos creados.
+     */
     @PostConstruct
     public void init() {
         // Verificar si hay emulador configurado o si es GCP real
@@ -44,6 +52,9 @@ public class PubSubConfig {
         }
     }
 
+    /**
+     * Detiene el subscriber al cerrar la aplicación.
+     */
     @PreDestroy
     public void destroy() {
         if (subscriber != null) {
