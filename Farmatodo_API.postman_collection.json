@@ -1,0 +1,235 @@
+{
+  "info": {
+    "name": "Farmatodo E-Commerce API",
+    "description": "Colección de endpoints para el sistema de e-commerce Farmatodo",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth Service",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/ping",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "v1", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Crear Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "test-api-key-12345"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cardNumber\": \"4111111111111111\",\n  \"cvv\": \"123\",\n  \"expirationDate\": \"12/25\",\n  \"cardHolderName\": \"Juan Pérez\",\n  \"customerId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/tokens",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "v1", "tokens"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customer Service",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8082/api/v1/customers/ping",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["api", "v1", "customers", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Crear Cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Juan\",\n  \"lastName\": \"Pérez\",\n  \"email\": \"juan@example.com\",\n  \"phone\": \"+573001234567\",\n  \"address\": \"Calle 123 #45-67\",\n  \"city\": \"Bogotá\",\n  \"state\": \"Cundinamarca\",\n  \"zipCode\": \"110111\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8082/api/v1/customers",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["api", "v1", "customers"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8082/api/v1/customers/{{customerId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["api", "v1", "customers", "{{customerId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Product Service",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8083/api/v1/products/ping",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["api", "v1", "products", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8083/api/v1/products/search?query=aspirina",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["api", "v1", "products", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "aspirina"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart Service",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8084/api/v1/carts/ping",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8084",
+              "path": ["api", "v1", "carts", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Agregar Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8084/api/v1/carts/{{customerId}}/items",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8084",
+              "path": ["api", "v1", "carts", "{{customerId}}", "items"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order Service",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8085/api/v1/orders/ping",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8085",
+              "path": ["api", "v1", "orders", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Crear Pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"cardToken\": \"tok_xxxxxxxxxxxx\",\n  \"deliveryAddress\": \"Calle 123 #45-67\",\n  \"items\": [\n    {\n      \"productId\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"quantity\": 2\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8085/api/v1/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8085",
+              "path": ["api", "v1", "orders"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+

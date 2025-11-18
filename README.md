@@ -108,6 +108,57 @@ Todos los servicios incluyen pruebas unitarias completas usando JUnit 5 y Mockit
 
 **Cobertura total**: Más de 90% en product-service, cobertura completa en todos los servicios principales.
 
+## 📚 Documentación API (Swagger/OpenAPI)
+
+Cada microservicio incluye documentación Swagger/OpenAPI independiente. Esta arquitectura permite:
+
+- **Independencia**: Cada servicio documenta sus propios endpoints
+- **Escalabilidad**: Fácil agregar o modificar servicios sin afectar otros
+- **Mantenibilidad**: Cambios en un servicio no afectan la documentación de otros
+- **Claridad**: Documentación específica y enfocada por servicio
+
+### Acceso a Swagger UI
+
+Una vez que un servicio esté ejecutándose, puedes acceder a su documentación Swagger UI en:
+
+| Servicio | URL Swagger UI | Puerto por defecto |
+|----------|---------------|-------------------|
+| auth-service | http://localhost:8080/swagger-ui.html | 8080 |
+| cart-service | http://localhost:8080/swagger-ui.html | 8080* |
+| customer-service | http://localhost:8080/swagger-ui.html | 8080* |
+| order-service | http://localhost:8080/swagger-ui.html | 8080* |
+| product-service | http://localhost:8080/swagger-ui.html | 8080 |
+| notification-service | http://localhost:8080/swagger-ui.html | 8080* |
+
+\* Los puertos pueden configurarse mediante la variable de entorno `PORT`
+
+### Endpoints de Documentación
+
+- **Swagger UI**: `/swagger-ui.html` o `/swagger-ui/index.html`
+- **OpenAPI JSON**: `/v3/api-docs`
+- **OpenAPI YAML**: `/v3/api-docs.yaml`
+
+### Características
+
+- Documentación interactiva de todos los endpoints
+- Esquemas de request/response
+- Validaciones y restricciones documentadas
+- Autenticación configurada (API Key para auth-service)
+- Ejemplos de uso
+- Pruebas directas desde la interfaz
+
+### Ejemplo de uso
+
+1. Inicia el servicio:
+```bash
+cd auth-service
+mvn spring-boot:run
+```
+
+2. Abre tu navegador en: `http://localhost:8080/swagger-ui.html`
+
+3. Explora los endpoints y prueba las APIs directamente desde Swagger UI
+
 ## 🚀 Ejecución de Pruebas
 
 ### Ejecutar todas las pruebas de un servicio
@@ -144,6 +195,7 @@ mvn test -Dtest=TokenServiceTest
 - **JUnit 5**
 - **Mockito**
 - **JaCoCo** (Cobertura de código)
+- **SpringDoc OpenAPI** (Swagger/OpenAPI 3)
 - **Lombok**
 - **Maven**
 

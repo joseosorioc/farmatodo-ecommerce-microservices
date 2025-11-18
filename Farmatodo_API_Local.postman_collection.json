@@ -1,0 +1,424 @@
+{
+  "info": {
+    "name": "Farmatodo E-Commerce API - Local",
+    "description": "Colección de endpoints para probar los microservicios de Farmatodo en local (localhost)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "test-api-key-12345",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth Service (Puerto 8081)",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8081/api/v1/auth/ping",
+              "host": ["{{baseUrl}}"],
+              "port": "8081",
+              "path": ["api", "v1", "auth", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Crear Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cardNumber\": \"4111111111111111\",\n  \"cvv\": \"123\",\n  \"expirationDate\": \"12/25\",\n  \"cardHolderName\": \"Juan Pérez\",\n  \"customerId\": \"{{customerId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}:8081/api/v1/auth/tokens",
+              "host": ["{{baseUrl}}"],
+              "port": "8081",
+              "path": ["api", "v1", "auth", "tokens"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customer Service (Puerto 8082)",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8082/api/v1/customers/ping",
+              "host": ["{{baseUrl}}"],
+              "port": "8082",
+              "path": ["api", "v1", "customers", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Crear Cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Juan\",\n  \"lastName\": \"Pérez\",\n  \"email\": \"juan.perez@example.com\",\n  \"phone\": \"+573001234567\",\n  \"address\": \"Calle 123 #45-67\",\n  \"city\": \"Bogotá\",\n  \"state\": \"Cundinamarca\",\n  \"zipCode\": \"110111\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}:8082/api/v1/customers",
+              "host": ["{{baseUrl}}"],
+              "port": "8082",
+              "path": ["api", "v1", "customers"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Cliente por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8082/api/v1/customers/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "port": "8082",
+              "path": ["api", "v1", "customers", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Todos los Clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8082/api/v1/customers",
+              "host": ["{{baseUrl}}"],
+              "port": "8082",
+              "path": ["api", "v1", "customers"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Juan Carlos\",\n  \"lastName\": \"Pérez García\",\n  \"email\": \"juan.perez@example.com\",\n  \"phone\": \"+573001234567\",\n  \"address\": \"Calle 123 #45-67\",\n  \"city\": \"Bogotá\",\n  \"state\": \"Cundinamarca\",\n  \"zipCode\": \"110111\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}:8082/api/v1/customers/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "port": "8082",
+              "path": ["api", "v1", "customers", "{{customerId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Product Service (Puerto 8083)",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8083/api/v1/products/ping",
+              "host": ["{{baseUrl}}"],
+              "port": "8083",
+              "path": ["api", "v1", "products", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8083/api/v1/products/search?query=aspirina",
+              "host": ["{{baseUrl}}"],
+              "port": "8083",
+              "path": ["api", "v1", "products", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "aspirina",
+                  "description": "Término de búsqueda"
+                },
+                {
+                  "key": "customerId",
+                  "value": "{{customerId}}",
+                  "description": "ID del cliente (opcional)",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Todos los Productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8083/api/v1/products",
+              "host": ["{{baseUrl}}"],
+              "port": "8083",
+              "path": ["api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Producto por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8083/api/v1/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "port": "8083",
+              "path": ["api", "v1", "products", "{{productId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart Service (Puerto 8084)",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8084/api/v1/carts/ping",
+              "host": ["{{baseUrl}}"],
+              "port": "8084",
+              "path": ["api", "v1", "carts", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Agregar Item al Carrito",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}:8084/api/v1/carts/{{customerId}}/items",
+              "host": ["{{baseUrl}}"],
+              "port": "8084",
+              "path": ["api", "v1", "carts", "{{customerId}}", "items"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Items del Carrito",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8084/api/v1/carts/{{customerId}}/items",
+              "host": ["{{baseUrl}}"],
+              "port": "8084",
+              "path": ["api", "v1", "carts", "{{customerId}}", "items"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Item del Carrito",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8084/api/v1/carts/{{customerId}}/items/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "port": "8084",
+              "path": ["api", "v1", "carts", "{{customerId}}", "items", "{{productId}}"]
+            }
+          }
+        },
+        {
+          "name": "Limpiar Carrito",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8084/api/v1/carts/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "port": "8084",
+              "path": ["api", "v1", "carts", "{{customerId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order Service (Puerto 8085)",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8085/api/v1/orders/ping",
+              "host": ["{{baseUrl}}"],
+              "port": "8085",
+              "path": ["api", "v1", "orders", "ping"]
+            }
+          }
+        },
+        {
+          "name": "Crear Pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"cardToken\": \"tok_xxxxxxxxxxxx\",\n  \"deliveryAddress\": \"Calle 123 #45-67\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 2\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}:8085/api/v1/orders",
+              "host": ["{{baseUrl}}"],
+              "port": "8085",
+              "path": ["api", "v1", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Pedido por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8085/api/v1/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "port": "8085",
+              "path": ["api", "v1", "orders", "{{orderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Pedidos por Cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8085/api/v1/orders/customer/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "port": "8085",
+              "path": ["api", "v1", "orders", "customer", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Estado del Pedido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONFIRMED\",\n  \"cardToken\": \"tok_xxxxxxxxxxxx\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}:8085/api/v1/orders/{{orderId}}/status",
+              "host": ["{{baseUrl}}"],
+              "port": "8085",
+              "path": ["api", "v1", "orders", "{{orderId}}", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notification Service (Puerto 8087)",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}:8087/api/v1/ping",
+              "host": ["{{baseUrl}}"],
+              "port": "8087",
+              "path": ["api", "v1", "ping"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
