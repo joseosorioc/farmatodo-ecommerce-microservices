@@ -20,6 +20,17 @@ El proyecto está compuesto por los siguientes microservicios:
 6. **payment-worker** - Worker para procesamiento de pagos
 7. **notification-service** - Servicio de notificaciones por correo electrónico
 
+
+La Arquitectura es la siguiente y se muestra en los diagramas: 
+
+- En GCP
+
+
+- La siguiente está más relacionada con la forma en que interactúan los componentes.
+
+<img width="1496" height="961" alt="image" src="https://github.com/user-attachments/assets/8d3c04df-f27d-49a3-8817-239921fb3138" />
+
+
 ## 🧪 Pruebas Unitarias
 
 Todos los servicios incluyen pruebas unitarias completas usando JUnit 5 y Mockito.
@@ -106,7 +117,22 @@ Todos los servicios incluyen pruebas unitarias completas usando JUnit 5 y Mockit
   - Búsqueda con y sin customerId
   - Manejo de errores
 
-**Cobertura total**: Más de 90% en product-service, cobertura completa en todos los servicios principales.
+**Cobertura total**: 
+
+<img width="1044" height="600" alt="image" src="https://github.com/user-attachments/assets/f88199c5-7d43-4665-a8d9-b335754953d6" />
+
+<img width="1050" height="834" alt="image" src="https://github.com/user-attachments/assets/8681ef54-6e1c-420a-b4d5-704738bea5a0" />
+
+<img width="1076" height="1098" alt="image" src="https://github.com/user-attachments/assets/fda30fc0-5502-41f7-9adb-33a9e5f57139" />
+
+<img width="1056" height="806" alt="image" src="https://github.com/user-attachments/assets/e1495035-20d1-44c1-914f-9d7ddd813604" />
+
+<img width="1070" height="858" alt="image" src="https://github.com/user-attachments/assets/1db6548b-abb3-49e9-8c96-0285e417c807" />
+
+<img width="1048" height="624" alt="image" src="https://github.com/user-attachments/assets/2bbbeb4a-699b-4769-9ce1-4aec2bdb831e" />
+
+<img width="1024" height="1204" alt="image" src="https://github.com/user-attachments/assets/07202f92-88d6-4f17-be84-7766d917b755" />
+
 
 ## 📚 Documentación API (Swagger/OpenAPI)
 
@@ -199,7 +225,7 @@ mvn test -Dtest=TokenServiceTest
 - **Lombok**
 - **Maven**
 
-## 📦 Estructura del Proyecto
+## 📦 Estructura del Proyecto (Monorepositorio)
 
 ```
 farmatodo-ecommerce-microservices/
