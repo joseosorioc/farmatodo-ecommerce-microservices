@@ -10,9 +10,17 @@ import io.swagger.v3.oas.models.Components;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuración de OpenAPI/Swagger para documentación de la API.
+ * Define la información de la API y el esquema de seguridad.
+ */
 @Configuration
 public class OpenApiConfig {
 
+    /**
+     * Configura la documentación OpenAPI del servicio.
+     * @return Configuración OpenAPI personalizada
+     */
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()

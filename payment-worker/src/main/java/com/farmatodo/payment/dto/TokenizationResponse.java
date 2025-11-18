@@ -5,6 +5,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * DTO para respuesta de tokenización.
+ * Contiene el token generado o información de error.
+ */
 @Data
 public class TokenizationResponse {
     private UUID transactionId;

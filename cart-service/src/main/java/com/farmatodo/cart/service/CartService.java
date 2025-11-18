@@ -15,6 +15,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio para gestión de carrito de compras.
+ * Maneja operaciones de agregar, consultar y eliminar items del carrito.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -22,6 +26,13 @@ public class CartService {
 
     private final CartRepository cartRepository;
 
+    /**
+     * Agrega un item al carrito del cliente.
+     * Si el producto ya existe, incrementa la cantidad.
+     * @param customerId ID del cliente
+     * @param request Datos del item a agregar
+     * @return Item agregado al carrito
+     */
     @Transactional
     public CartItemResponse addItemToCart(UUID customerId, CartItemRequest request) {
         log.info("Agregando producto {} al carrito del cliente {}", request.getProductId(), customerId);
@@ -46,23 +57,42 @@ public class CartService {
         return mapToResponse(cart);
     }
 
+    /**
+     * Obtiene todos los items del carrito de un cliente.
+     * @param customerId ID del cliente
+     * @return Lista de items del carrito
+     */
     public List<CartItemResponse> getCartItems(UUID customerId) {
         return cartRepository.findByCustomerId(customerId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Elimina un producto específico del carrito del cliente.
+     * @param customerId ID del cliente
+     * @param productId ID del producto a eliminar
+     */
     @Transactional
     public void removeItemFromCart(UUID customerId, UUID productId) {
         cartRepository.findByCustomerIdAndProductId(customerId, productId)
                 .ifPresent(cartRepository::delete);
     }
 
+    /**
+     * Elimina todos los items del carrito del cliente.
+     * @param customerId ID del cliente
+     */
     @Transactional
     public void clearCart(UUID customerId) {
         cartRepository.deleteByCustomerId(customerId);
     }
 
+    /**
+     * Convierte una entidad Cart a CartItemResponse.
+     * @param cart Entidad del carrito
+     * @return DTO de respuesta
+     */
     private CartItemResponse mapToResponse(Cart cart) {
         return CartItemResponse.builder()
                 .id(cart.getId())

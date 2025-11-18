@@ -7,10 +7,18 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
+/**
+ * Configuración para procesamiento asíncrono.
+ * Define el pool de threads para tareas asíncronas.
+ */
 @Configuration
 @EnableAsync
 public class AsyncConfig {
 
+    /**
+     * Configura el executor para tareas asíncronas.
+     * @return Executor configurado con pool de threads
+     */
     @Bean(name = "taskExecutor")
     public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Controlador REST para autenticación y tokenización de tarjetas de crédito.
+ * Proporciona endpoints para crear tokens seguros y verificar el estado del servicio.
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -34,6 +38,10 @@ public class AuthController {
 
     private final TokenService tokenService;
 
+    /**
+     * Verifica el estado del servicio de autenticación.
+     * @return Respuesta con mensaje de estado
+     */
     @Operation(summary = "Health check", description = "Verifica el estado del servicio")
     @ApiResponse(responseCode = "200", description = "Servicio activo")
     @GetMapping("/ping")
@@ -43,6 +51,12 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Crea un token seguro para una tarjeta de crédito.
+     * Valida los datos de la tarjeta y genera un token único.
+     * @param request Datos de la tarjeta de crédito a tokenizar
+     * @return Respuesta con el token generado o error
+     */
     @Operation(
             summary = "Crear token de tarjeta",
             description = "Tokeniza una tarjeta de crédito y retorna un token seguro"
@@ -92,6 +106,11 @@ public class AuthController {
         }
     }
 
+    /**
+     * Maneja excepciones de validación de datos de entrada.
+     * @param ex Excepción de validación capturada
+     * @return Respuesta de error con detalles de validación
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();

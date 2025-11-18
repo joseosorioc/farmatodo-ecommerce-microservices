@@ -10,6 +10,10 @@ import org.hibernate.annotations.GenericGenerator;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * Entidad que representa un item de un pedido.
+ * Almacena información del producto, cantidad y precios.
+ */
 @Entity
 @Table(name = "order_items")
 @Data

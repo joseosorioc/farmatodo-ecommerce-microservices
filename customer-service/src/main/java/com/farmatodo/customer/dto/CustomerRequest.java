@@ -6,6 +6,10 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+/**
+ * DTO para solicitud de creación o actualización de cliente.
+ * Contiene los datos del cliente a procesar.
+ */
 @Data
 public class CustomerRequest {
     @NotBlank(message = "El nombre es requerido")

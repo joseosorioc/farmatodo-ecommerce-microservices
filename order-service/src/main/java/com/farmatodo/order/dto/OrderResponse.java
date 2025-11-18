@@ -10,6 +10,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * DTO para respuesta de información de pedido.
+ * Contiene todos los datos del pedido incluyendo items y estado.
+ */
 @Data
 @Builder
 @NoArgsConstructor

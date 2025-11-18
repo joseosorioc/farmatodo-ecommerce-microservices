@@ -14,6 +14,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+/**
+ * Listener de eventos de Pub/Sub para procesamiento de pagos.
+ * Escucha eventos de creación de pedidos y procesa los pagos.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -25,6 +29,12 @@ public class PaymentEventListener implements MessageReceiver {
     @Value("${spring.cloud.gcp.pubsub.project-id:local}")
     private String projectId;
 
+    /**
+     * Procesa mensajes recibidos de Pub/Sub.
+     * Extrae datos del pedido y tarjeta y procesa el pago.
+     * @param message Mensaje recibido de Pub/Sub
+     * @param consumer Consumidor para confirmar o rechazar el mensaje
+     */
     @Override
     public void receiveMessage(PubsubMessage message, AckReplyConsumer consumer) {
         try {

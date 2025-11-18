@@ -5,6 +5,10 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+/**
+ * DTO para solicitud de tokenización de tarjeta de crédito.
+ * Contiene los datos de la tarjeta a tokenizar.
+ */
 @Data
 public class CreditCardRequest {
     @NotBlank(message = "El número de tarjeta es requerido")

@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Controlador REST para gestión de carrito de compras.
+ * Proporciona endpoints para agregar, consultar y eliminar items del carrito.
+ */
 @RestController
 @RequestMapping("/api/v1/carts")
 @RequiredArgsConstructor
@@ -27,6 +31,10 @@ public class CartController {
 
     private final CartService cartService;
 
+    /**
+     * Verifica el estado del servicio de carrito.
+     * @return Respuesta con mensaje de estado
+     */
     @Operation(summary = "Health check", description = "Verifica el estado del servicio")
     @ApiResponse(responseCode = "200", description = "Servicio activo")
     @GetMapping("/ping")
@@ -34,6 +42,13 @@ public class CartController {
         return ResponseEntity.ok(java.util.Map.of("message", "pong"));
     }
 
+    /**
+     * Agrega un producto al carrito del cliente.
+     * Si el producto ya existe, incrementa la cantidad.
+     * @param customerId ID del cliente
+     * @param request Datos del item a agregar
+     * @return Item agregado al carrito
+     */
     @Operation(summary = "Agregar item al carrito", description = "Agrega un producto al carrito del cliente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Item agregado exitosamente"),
@@ -47,6 +62,11 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * Obtiene todos los items del carrito de un cliente.
+     * @param customerId ID del cliente
+     * @return Lista de items del carrito
+     */
     @Operation(summary = "Obtener items del carrito", description = "Retorna todos los items del carrito del cliente")
     @ApiResponse(responseCode = "200", description = "Lista de items del carrito")
     @GetMapping("/{customerId}/items")
@@ -56,6 +76,12 @@ public class CartController {
         return ResponseEntity.ok(items);
     }
 
+    /**
+     * Elimina un producto específico del carrito del cliente.
+     * @param customerId ID del cliente
+     * @param productId ID del producto a eliminar
+     * @return Respuesta vacía si se eliminó correctamente
+     */
     @Operation(summary = "Eliminar item del carrito", description = "Elimina un producto específico del carrito")
     @ApiResponse(responseCode = "204", description = "Item eliminado exitosamente")
     @DeleteMapping("/{customerId}/items/{productId}")
@@ -66,6 +92,11 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Elimina todos los items del carrito del cliente.
+     * @param customerId ID del cliente
+     * @return Respuesta vacía si se limpió correctamente
+     */
     @Operation(summary = "Limpiar carrito", description = "Elimina todos los items del carrito del cliente")
     @ApiResponse(responseCode = "204", description = "Carrito limpiado exitosamente")
     @DeleteMapping("/{customerId}")

@@ -10,6 +10,10 @@ import org.hibernate.annotations.GenericGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Entidad que representa un token de tarjeta de crédito.
+ * Almacena información tokenizada y enmascarada de la tarjeta.
+ */
 @Entity
 @Table(name = "credit_card_tokens")
 @Data

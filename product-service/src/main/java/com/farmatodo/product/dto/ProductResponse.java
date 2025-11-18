@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * DTO para respuesta de información de producto.
+ * Contiene todos los datos del producto.
+ */
 @Data
 @Builder
 @NoArgsConstructor

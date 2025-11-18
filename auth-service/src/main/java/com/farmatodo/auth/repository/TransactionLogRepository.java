@@ -6,6 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+/**
+ * Repositorio para gestión de logs de transacciones.
+ * Extiende JpaRepository para operaciones CRUD básicas.
+ */
 @Repository
 public interface TransactionLogRepository extends JpaRepository<TransactionLog, UUID> {
 }

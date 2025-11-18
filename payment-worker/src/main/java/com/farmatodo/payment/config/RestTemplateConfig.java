@@ -11,9 +11,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Configuración de RestTemplate para llamadas HTTP.
+ * Configura timeouts y connection pooling para evitar errores de conexión.
+ */
 @Configuration
 public class RestTemplateConfig {
 
+    /**
+     * Configura RestTemplate con timeouts y connection pooling.
+     * @return RestTemplate configurado
+     */
     @Bean
     public RestTemplate restTemplate() {
         // Configuración de timeouts para manejar cold starts y evitar "Broken pipe"
