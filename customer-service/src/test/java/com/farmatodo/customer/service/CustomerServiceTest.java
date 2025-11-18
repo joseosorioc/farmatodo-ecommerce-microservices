@@ -90,5 +90,133 @@ class CustomerServiceTest {
         assertEquals(customerId, response.getId());
         assertEquals("juan@example.com", response.getEmail());
     }
+
+    @Test
+    void testGetCustomerById_NotFound() {
+        // Arrange
+        UUID customerId = UUID.randomUUID();
+        when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            customerService.getCustomerById(customerId);
+        });
+        assertTrue(exception.getMessage().contains("no encontrado"));
+    }
+
+    @Test
+    void testGetAllCustomers() {
+        // Arrange
+        Customer customer1 = Customer.builder()
+                .id(UUID.randomUUID())
+                .firstName("Juan")
+                .lastName("Pérez")
+                .email("juan@example.com")
+                .phone("+573001234567")
+                .address("Calle 123")
+                .build();
+        Customer customer2 = Customer.builder()
+                .id(UUID.randomUUID())
+                .firstName("María")
+                .lastName("García")
+                .email("maria@example.com")
+                .phone("+573007654321")
+                .address("Calle 456")
+                .build();
+
+        when(customerRepository.findAll()).thenReturn(java.util.List.of(customer1, customer2));
+
+        // Act
+        java.util.List<CustomerResponse> customers = customerService.getAllCustomers();
+
+        // Assert
+        assertNotNull(customers);
+        assertEquals(2, customers.size());
+        verify(customerRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testUpdateCustomer_Success() {
+        // Arrange
+        UUID customerId = UUID.randomUUID();
+        Customer existingCustomer = Customer.builder()
+                .id(customerId)
+                .firstName("Juan")
+                .lastName("Pérez")
+                .email("juan@example.com")
+                .phone("+573001234567")
+                .address("Calle 123")
+                .build();
+
+        CustomerRequest updateRequest = new CustomerRequest();
+        updateRequest.setFirstName("Juan Carlos");
+        updateRequest.setLastName("Pérez García");
+        updateRequest.setEmail("juan@example.com"); // Mismo email
+        updateRequest.setPhone("+573001234567"); // Mismo teléfono
+        updateRequest.setAddress("Calle 456");
+        updateRequest.setCity("Medellín");
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(existingCustomer));
+        when(customerRepository.save(any(Customer.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        CustomerResponse response = customerService.updateCustomer(customerId, updateRequest);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals("Juan Carlos", response.getFirstName());
+        assertEquals("Calle 456", response.getAddress());
+        verify(customerRepository, times(1)).save(any(Customer.class));
+    }
+
+    @Test
+    void testUpdateCustomer_NotFound() {
+        // Arrange
+        UUID customerId = UUID.randomUUID();
+        when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            customerService.updateCustomer(customerId, customerRequest);
+        });
+        assertTrue(exception.getMessage().contains("no encontrado"));
+    }
+
+    @Test
+    void testUpdateCustomer_DuplicateEmail() {
+        // Arrange
+        UUID customerId = UUID.randomUUID();
+        Customer existingCustomer = Customer.builder()
+                .id(customerId)
+                .email("juan@example.com")
+                .phone("+573001234567")
+                .build();
+
+        CustomerRequest updateRequest = new CustomerRequest();
+        updateRequest.setEmail("nuevo@example.com"); // Email diferente
+        updateRequest.setPhone("+573001234567");
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(existingCustomer));
+        when(customerRepository.existsByEmail("nuevo@example.com")).thenReturn(true);
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            customerService.updateCustomer(customerId, updateRequest);
+        });
+        assertTrue(exception.getMessage().contains("email ya está registrado"));
+    }
+
+    @Test
+    void testCreateCustomer_DuplicatePhone() {
+        // Arrange
+        when(customerRepository.existsByEmail(anyString())).thenReturn(false);
+        when(customerRepository.existsByPhone(anyString())).thenReturn(true);
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            customerService.createCustomer(customerRequest);
+        });
+        assertTrue(exception.getMessage().contains("teléfono ya está registrado"));
+    }
 }
 
