@@ -31,6 +31,12 @@ public class PaymentService {
     @Value("${app.max-payment-attempts:3}")
     private int maxAttempts;
 
+    @Value("${app.max-tokenization-attempts:3}")
+    private int maxTokenizationAttempts = 3;
+
+    @Value("${app.max-update-attempts:3}")
+    private int maxUpdateAttempts = 3;
+
     @Value("${ORDER_SERVICE_URL:http://localhost:8085}")
     private String orderServiceUrl;
 
@@ -43,8 +49,8 @@ public class PaymentService {
     public void processPayment(UUID orderId, UUID customerId, Double amount, CardData cardData) {
         log.info("Procesando pago para orden: {}, monto: {}", orderId, amount);
 
-        // Paso 1: Tokenizar la tarjeta llamando a auth-service
-        TokenizationResponse tokenizationResponse = tokenizeCard(cardData, customerId);
+        // Paso 1: Tokenizar la tarjeta llamando a auth-service (con reintentos)
+        TokenizationResponse tokenizationResponse = tokenizeCardWithRetries(cardData, customerId, orderId);
 
         if (tokenizationResponse == null || tokenizationResponse.getToken() == null || tokenizationResponse.getError() != null) {
             // Tokenización rechazada
@@ -78,6 +84,46 @@ public class PaymentService {
         }
     }
 
+    private TokenizationResponse tokenizeCardWithRetries(CardData cardData, UUID customerId, UUID orderId) {
+        log.info("Iniciando tokenización de tarjeta para cliente: {} (orden: {})", customerId, orderId);
+        
+        for (int attempt = 1; attempt <= maxTokenizationAttempts; attempt++) {
+            log.info("Intento de tokenización {} de {} para orden: {}", attempt, maxTokenizationAttempts, orderId);
+            
+            TokenizationResponse response = tokenizeCard(cardData, customerId);
+            
+            // Si la tokenización fue exitosa, retornar
+            if (response != null && response.getToken() != null && response.getError() == null) {
+                log.info("Tokenización exitosa en intento {} para orden: {}", attempt, orderId);
+                return response;
+            }
+            
+            // Si es el último intento, retornar el error
+            if (attempt == maxTokenizationAttempts) {
+                log.error("Todos los intentos de tokenización fallaron para orden: {}", orderId);
+                return response;
+            }
+            
+            // Esperar antes del siguiente intento (backoff exponencial)
+            int waitTime = (int) Math.pow(2, attempt) * 1000; // 2s, 4s, 8s...
+            log.warn("Tokenización falló en intento {} para orden: {}. Reintentando en {}ms...", 
+                    attempt, orderId, waitTime);
+            try {
+                Thread.sleep(waitTime);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("Interrupción durante espera de reintento de tokenización", e);
+                break;
+            }
+        }
+        
+        // Si llegamos aquí, todos los intentos fallaron
+        TokenizationResponse errorResponse = new TokenizationResponse();
+        errorResponse.setError("TOKENIZATION_ERROR");
+        errorResponse.setMessage("Todos los intentos de tokenización fallaron");
+        return errorResponse;
+    }
+
     private TokenizationResponse tokenizeCard(CardData cardData, UUID customerId) {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -91,25 +137,43 @@ public class PaymentService {
             request.setCardHolderName(cardData.getCardHolderName());
             request.setCustomerId(customerId.toString());
 
+            String url = authServiceUrl + "/api/v1/auth/tokens";
+            log.debug("Llamando a auth-service: {}", url);
+            
             HttpEntity<TokenizationRequest> httpEntity = new HttpEntity<>(request, headers);
             ResponseEntity<TokenizationResponse> response = restTemplate.exchange(
-                authServiceUrl + "/api/v1/tokens",
+                url,
                 HttpMethod.POST,
                 httpEntity,
                 TokenizationResponse.class
             );
 
+            log.debug("Respuesta recibida de auth-service. Status: {}", response.getStatusCode());
+            
             if (response.getStatusCode().is2xxSuccessful()) {
-                return response.getBody();
+                TokenizationResponse tokenResponse = response.getBody();
+                if (tokenResponse != null && tokenResponse.getToken() != null) {
+                    log.debug("Token generado exitosamente: {}", tokenResponse.getToken());
+                } else {
+                    log.warn("Respuesta exitosa pero sin token. Response: {}", tokenResponse);
+                }
+                return tokenResponse;
             } else {
-                log.error("Error al tokenizar tarjeta. Status: {}", response.getStatusCode());
+                log.warn("Error al tokenizar tarjeta. Status: {}", response.getStatusCode());
                 TokenizationResponse errorResponse = new TokenizationResponse();
                 errorResponse.setError("TOKENIZATION_FAILED");
-                errorResponse.setMessage("Error al tokenizar tarjeta");
+                errorResponse.setMessage("Error al tokenizar tarjeta. Status: " + response.getStatusCode());
                 return errorResponse;
             }
+        } catch (org.springframework.web.client.ResourceAccessException e) {
+            // Errores de conexión (timeout, broken pipe, etc.)
+            log.warn("Error de conexión al tokenizar tarjeta: {}", e.getMessage());
+            TokenizationResponse errorResponse = new TokenizationResponse();
+            errorResponse.setError("TOKENIZATION_CONNECTION_ERROR");
+            errorResponse.setMessage("Error de conexión: " + e.getMessage());
+            return errorResponse;
         } catch (Exception e) {
-            log.error("Error al tokenizar tarjeta", e);
+            log.warn("Error al tokenizar tarjeta: {}", e.getMessage());
             TokenizationResponse errorResponse = new TokenizationResponse();
             errorResponse.setError("TOKENIZATION_ERROR");
             errorResponse.setMessage(e.getMessage());
@@ -150,23 +214,48 @@ public class PaymentService {
     }
 
     private void updateOrderStatusAndToken(UUID orderId, String status, String cardToken) {
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Content-Type", "application/json");
-            
-            Map<String, String> body = new HashMap<>();
-            body.put("status", status);
-            body.put("cardToken", cardToken);
-            
-            HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
-            restTemplate.exchange(
-                orderServiceUrl + "/api/v1/orders/" + orderId + "/status",
-                HttpMethod.PUT,
-                request,
-                Void.class
-            );
-        } catch (Exception e) {
-            log.error("Error al actualizar estado y token de orden: {}", orderId, e);
+        updateOrderStatusAndTokenWithRetries(orderId, status, cardToken);
+    }
+
+    private void updateOrderStatusAndTokenWithRetries(UUID orderId, String status, String cardToken) {
+        for (int attempt = 1; attempt <= maxUpdateAttempts; attempt++) {
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("Content-Type", "application/json");
+                
+                Map<String, String> body = new HashMap<>();
+                body.put("status", status);
+                body.put("cardToken", cardToken);
+                
+                HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
+                restTemplate.exchange(
+                    orderServiceUrl + "/api/v1/orders/" + orderId + "/status",
+                    HttpMethod.PUT,
+                    request,
+                    Void.class
+                );
+                log.info("Estado y token actualizados exitosamente para orden: {} (intento {})", orderId, attempt);
+                return; // Éxito, salir
+            } catch (org.springframework.web.client.ResourceAccessException e) {
+                // Error de conexión, reintentar
+                if (attempt == maxUpdateAttempts) {
+                    log.error("Error al actualizar estado y token de orden: {} después de {} intentos", orderId, maxUpdateAttempts, e);
+                } else {
+                    int waitTime = attempt * 1000; // 1s, 2s, 3s...
+                    log.warn("Error de conexión al actualizar estado y token de orden: {} (intento {}). Reintentando en {}ms...", 
+                            orderId, attempt, waitTime);
+                    try {
+                        Thread.sleep(waitTime);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        log.error("Interrupción durante espera de reintento de actualización", ie);
+                        return;
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error al actualizar estado y token de orden: {} (intento {})", orderId, attempt, e);
+                return; // Otro tipo de error, no reintentar
+            }
         }
     }
 
@@ -176,22 +265,47 @@ public class PaymentService {
     }
 
     private void updateOrderStatus(UUID orderId, String status) {
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Content-Type", "application/json");
-            
-            Map<String, String> body = new HashMap<>();
-            body.put("status", status);
-            
-            HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
-            restTemplate.exchange(
-                orderServiceUrl + "/api/v1/orders/" + orderId + "/status",
-                HttpMethod.PUT,
-                request,
-                Void.class
-            );
-        } catch (Exception e) {
-            log.error("Error al actualizar estado de orden: {}", orderId, e);
+        updateOrderStatusWithRetries(orderId, status);
+    }
+
+    private void updateOrderStatusWithRetries(UUID orderId, String status) {
+        for (int attempt = 1; attempt <= maxUpdateAttempts; attempt++) {
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("Content-Type", "application/json");
+                
+                Map<String, String> body = new HashMap<>();
+                body.put("status", status);
+                
+                HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
+                restTemplate.exchange(
+                    orderServiceUrl + "/api/v1/orders/" + orderId + "/status",
+                    HttpMethod.PUT,
+                    request,
+                    Void.class
+                );
+                log.info("Estado actualizado exitosamente para orden: {} (intento {})", orderId, attempt);
+                return; // Éxito, salir
+            } catch (org.springframework.web.client.ResourceAccessException e) {
+                // Error de conexión, reintentar
+                if (attempt == maxUpdateAttempts) {
+                    log.error("Error al actualizar estado de orden: {} después de {} intentos", orderId, maxUpdateAttempts, e);
+                } else {
+                    int waitTime = attempt * 1000; // 1s, 2s, 3s...
+                    log.warn("Error de conexión al actualizar estado de orden: {} (intento {}). Reintentando en {}ms...", 
+                            orderId, attempt, waitTime);
+                    try {
+                        Thread.sleep(waitTime);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        log.error("Interrupción durante espera de reintento de actualización", ie);
+                        return;
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error al actualizar estado de orden: {} (intento {})", orderId, attempt, e);
+                return; // Otro tipo de error, no reintentar
+            }
         }
     }
 

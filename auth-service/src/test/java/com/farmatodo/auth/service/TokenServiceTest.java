@@ -74,5 +74,64 @@ class TokenServiceTest {
         assertTrue(result.isPresent());
         assertEquals(creditCardToken, result.get());
     }
+
+    @Test
+    void testGetTokenByTokenValue_NotFound() {
+        // Arrange
+        String token = "tok_nonexistent";
+        when(tokenRepository.findByToken(token)).thenReturn(Optional.empty());
+
+        // Act
+        Optional<CreditCardToken> result = tokenService.getTokenByTokenValue(token);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testCreateToken_Rejection() {
+        // Arrange
+        ReflectionTestUtils.setField(tokenService, "rejectionProbability", 1.0);
+        CreditCardRequest request = new CreditCardRequest();
+        request.setCardNumber("4111111111111111");
+        request.setCvv("123");
+        request.setExpirationDate("12/25");
+        request.setCardHolderName("Juan Pérez");
+        request.setCustomerId(UUID.randomUUID().toString());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            tokenService.createToken(request);
+        });
+
+        assertTrue(exception.getMessage().contains("rechazada"));
+        verify(tokenRepository, never()).save(any(CreditCardToken.class));
+    }
+
+    @Test
+    void testCreateToken_MasksCardNumberCorrectly() {
+        // Arrange
+        CreditCardRequest request = new CreditCardRequest();
+        request.setCardNumber("4111111111111111");
+        request.setCvv("123");
+        request.setExpirationDate("12/25");
+        request.setCardHolderName("Juan Pérez");
+        request.setCustomerId(UUID.randomUUID().toString());
+
+        when(tokenRepository.existsByToken(anyString())).thenReturn(false);
+        when(tokenRepository.save(any(CreditCardToken.class))).thenAnswer(invocation -> {
+            CreditCardToken token = invocation.getArgument(0);
+            assertTrue(token.getMaskedCardNumber().contains("1111"));
+            assertTrue(token.getMaskedCardNumber().startsWith("****"));
+            assertEquals("1111", token.getLastFourDigits());
+            return token;
+        });
+
+        // Act
+        tokenService.createToken(request);
+
+        // Assert
+        verify(tokenRepository, times(1)).save(any(CreditCardToken.class));
+    }
 }
 
