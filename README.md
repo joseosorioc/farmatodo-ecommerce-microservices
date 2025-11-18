@@ -24,6 +24,7 @@ El proyecto está compuesto por los siguientes microservicios:
 La Arquitectura es la siguiente y se muestra en los diagramas: 
 
 - En GCP
+<img width="2559" height="1227" alt="image" src="https://github.com/user-attachments/assets/5c5c7b9b-0b1d-4aea-ade3-89b02f255a70" />
 
 
 - La siguiente está más relacionada con la forma en que interactúan los componentes.
